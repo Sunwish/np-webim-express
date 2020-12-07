@@ -37,3 +37,10 @@ exports.getAllMessages =
 function getAllMessages (callback) {
     models.messageModel.find({}, callback);
 }
+
+exports.getUserByUserId =
+function getUserByUserId (user_id, callback) {
+    models.userModel.find({
+        id: user_id
+    }, callback);
+}

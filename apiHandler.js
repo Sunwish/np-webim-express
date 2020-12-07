@@ -18,20 +18,17 @@ function handleApp (app) {
 
     app.get('/api/getTest', (req, res) => {
         res.send('<h1>Welcome to post test page!</h1>');
-        console.log(req.query);
     });
 
     app.post('/api/postTest', (req, res) => {
         res.send('<h1>Welcome to post test page!</h1>');
-        // console.log(req.headers);
-        console.log(req.body);
     });
 
     app.post('/api/getMessages', (req, res) => {
         dao.getAllMessages((err, msgs) => {
             res.json({
                 'errMessage': err,
-                'messages': msgs
+                'result': msgs
             })
         })
     });
@@ -43,9 +40,17 @@ function handleApp (app) {
         })
     })
     app.post('/api/deleteMessage', (req, res) => {
-        console.log(req.body);
         dao.deleteMessage(req.body.id, (err) => {
             res.json(err);
+        })
+    })
+
+    app.post('/api/getUserByUserId', (req, res) => {
+        dao.getUserByUserId(req.body.id, (err, user) => {
+            res.json({
+                "errMessage": err,
+                "result": user
+            });
         })
     })
 
