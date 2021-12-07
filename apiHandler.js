@@ -45,6 +45,15 @@ function handleApp (app) {
         })
     })
 
+    app.post('/api/getAllUsers', (req, res) => {
+        dao.getAllUsers((err, users) => {
+            res.json({
+                "errMessage": err,
+                "result": users
+            })
+        })
+    })
+
     app.post('/api/getUserByUserId', (req, res) => {
         dao.getUserByUserId(req.body.id, (err, user) => {
             res.json({
@@ -54,4 +63,20 @@ function handleApp (app) {
         })
     })
 
+    app.post('/api/addFriend', (req, res) => {
+        dao.addFriend(req.body.id1, req.body.id2, (err) => {
+            res.json({
+                "errMessage": err
+            })
+        })
+    })
+
+    app.post('/api/getAllFriendsId', (req, res) => {
+        dao.getAllFriends(req.body.id, (err, friends) => {
+            res.json({
+                "errMessage": err,
+                "result": friends
+            })
+        })
+    })
 }

@@ -33,6 +33,11 @@ function deleteMessage (id, callback) {
     }, callback);
 }
 
+exports.getAllUsers = 
+function getAllUsers (callback) {
+    models.userModel.find({}, callback);
+}
+
 exports.getAllMessages =
 function getAllMessages (callback) {
     models.messageModel.find({}, callback);
@@ -40,7 +45,36 @@ function getAllMessages (callback) {
 
 exports.getUserByUserId =
 function getUserByUserId (user_id, callback) {
-    models.userModel.find({
+    models.userModel.findOne({
         id: user_id
     }, callback);
+}
+
+exports.addFriend = 
+function addFriend (user_id_A, user_id_B, callback) {
+    if(user_id_A == null || user_id_B == null) {
+        callback("[ERR] User id cannot be null.");
+        return;
+    }
+    new models.friendModle({
+        user_id_pair: [user_id_A, user_id_B]
+    }).save(callback);
+}
+
+exports.getAllFriends =
+function getAllFriends (user_id, callback) {
+    var friend_id_list = [];
+    models.friendModle.where('user_id_pair').in(user_id).exec()
+    .then(friends => {
+        for(friend of friends){
+            friend_id_list.push(
+                friend.user_id_pair[0] == user_id
+                ? friend.user_id_pair[1]
+                : friend.user_id_pair[0]);
+        }
+        callback(null, friend_id_list);
+    })
+    .catch(err => {
+        callback(err);
+    })
 }
