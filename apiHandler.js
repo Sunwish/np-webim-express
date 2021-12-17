@@ -1,3 +1,4 @@
+const { disable } = require('express/lib/application');
 var dao = require('./dao');
 
 exports.handleApp =
@@ -6,46 +7,52 @@ function handleApp (app) {
         res.send('<h1>Hello World!</h1>');
     });
 
-    app.get('/getMessages', (req, res) => {
-        dao.getAllMessages(function(err, msgs){
-            if(err) {
-                res.send("<h1>" + err + "</h1>");
-                return;
-            }
-            res.json(msgs);
-        })
-    })
-
-    app.get('/api/getTest', (req, res) => {
+    app.get('/api/test', (req, res) => {
         res.send('<h1>Welcome to post test page!</h1>');
     });
 
-    app.post('/api/postTest', (req, res) => {
+    app.post('/api/test', (req, res) => {
         res.send('<h1>Welcome to post test page!</h1>');
     });
 
-    app.post('/api/getMessages', (req, res) => {
-        dao.getAllMessages((err, msgs) => {
-            res.json({
-                'errMessage': err,
-                'result': msgs
-            })
-        })
-    });
+    //////////////////////////////////////////////////////////
 
-    app.post('/api/createMessage', (req, res) => {
+    app.get('/api/messages', async (req, res) => {
+        [err, result] = await dao.getAllMessagesAsync();
+        res.json({
+            'errMessage': err,
+            'result': result
+        });
+    });
+    /*
+    app.post('/api/message', (req, res) => {
         let msg = req.body;
-        dao.insertMessage(msg.id, msg.sender, msg.content, (err) => {
-            res.json(err);
+        dao.insertMessage(msg.id, msg.sender, msg.content, (err, result) => {
+            res.json({
+                "errMessage": err,
+                "result": result
+            });
         })
     })
-    app.post('/api/deleteMessage', (req, res) => {
-        dao.deleteMessage(req.body.id, (err) => {
-            res.json(err);
-        })
+    */
+    app.post('/api/message', async (req, res) => {
+        let msg = req.body;
+        [err, result] = await dao.insertMessageAsync(msg.id, msg.sender, msg.content);
+        res.json({
+            "errMessage": err,
+            "result": result
+        });
     })
 
-    app.post('/api/getAllUsers', (req, res) => {
+    app.delete('/api/message', async (req, res) => {
+        [err, result] = await dao.deleteMessageAsync(req.body.id);
+        res.json({
+            "errMessage": err,
+            "result": result
+        });
+    })
+/*
+    app.get('/api/users', (req, res) => {
         dao.getAllUsers((err, users) => {
             res.json({
                 "errMessage": err,
@@ -53,30 +60,42 @@ function handleApp (app) {
             })
         })
     })
-
-    app.post('/api/getUserByUserId', (req, res) => {
-        dao.getUserByUserId(req.body.id, (err, user) => {
-            res.json({
-                "errMessage": err,
-                "result": user
-            });
+*/
+    app.get('/api/users', async (req, res) => {
+        let [err, result] = await dao.getAllUsersAsync()
+        res.json({
+            "errMessage": err,
+            "result": result
         })
+        
     })
 
-    app.post('/api/addFriend', (req, res) => {
-        dao.addFriend(req.body.id1, req.body.id2, (err) => {
-            res.json({
-                "errMessage": err
-            })
-        })
+    app.get('/api/user/*', async (req, res) => {
+        [err, result] = await dao.getUserByUserIdAsync(+req.params[0]);
+        res.json({
+            "errMessage": err,
+            "result": result
+        });
     })
 
-    app.post('/api/getAllFriendsId', (req, res) => {
-        dao.getAllFriends(req.body.id, (err, friends) => {
-            res.json({
-                "errMessage": err,
-                "result": friends
-            })
-        })
+    app.post('/api/friend', async (req, res) => {
+        [err, result] = await dao.addFriendAsync(req.body.id1, req.body.id2);
+        res.json({
+            "errMessage": err,
+            "result": result
+        });
+    })
+
+    app.get('/api/friendsId/*', async (req, res) => {
+        [err, result] = await dao.getAllFriendsAsync(+req.params[0]);
+        res.json({
+            "errMessage": err,
+            "result": result
+        });
+    })
+
+    app.get('./api/friendMessages/*', (req, res) => {
+        req.body.
+        dao.getFriendMessages()
     })
 }
