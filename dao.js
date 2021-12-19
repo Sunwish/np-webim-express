@@ -38,7 +38,7 @@ function insertMessageAsync (id, sender, receiver, content){
     }).save()
     .then(async result => {
         [err, res] = await insertFriendMessageAsync (id, sender, receiver, result._id);
-        return [err, res];
+        return [err, result];
     })
     .catch(err => [err]);
 }
@@ -47,7 +47,7 @@ function insertMessageAsync (id, sender, receiver, content){
 
 function insertFriendMessageAsync (id, sender, receicer, messageId) {
     return new models.friendMessageModel({
-        user_id_pair: [sender, receicer],
+        user_id_pair: [sender, receicer].sort(),
         messageId: messageId
     }).save()
     .then(result => [null, result])

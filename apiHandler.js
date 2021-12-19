@@ -37,7 +37,7 @@ function handleApp (app) {
     */
     app.post('/api/message', async (req, res) => {
         let msg = req.body;
-        [err, result] = await dao.insertMessageAsync(msg.id, msg.sender, msg.receicer, msg.content);
+        [err, result] = await dao.insertMessageAsync(msg.id, msg.sender, msg.receiver, msg.content);
         res.json({
             "errMessage": err,
             "result": result
