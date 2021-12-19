@@ -24,15 +24,31 @@ function insertMessage (id, sender, content, callback){
     new models.messageModel({
         id: id,
         sender: sender,
+        receiver: receive,
         content: content
     }).save(callback);
 }
 exports.insertMessageAsync =
-function insertMessageAsync (id, sender, content){
+function insertMessageAsync (id, sender, receiver, content){
     return new models.messageModel({
         id: id,
         sender: sender,
+        receiver: receiver,
         content: content
+    }).save()
+    .then(async result => {
+        [err, res] = await insertFriendMessageAsync (id, sender, receiver, result._id);
+        return [err, res];
+    })
+    .catch(err => [err]);
+}
+
+//////////////////////////////////////// INSERT FRINED MESSAGE
+
+function insertFriendMessageAsync (id, sender, receicer, messageId) {
+    return new models.friendMessageModel({
+        user_id_pair: [sender, receicer],
+        messageId: messageId
     }).save()
     .then(result => [null, result])
     .catch(err => [err]);

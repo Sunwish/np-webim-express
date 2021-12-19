@@ -9,6 +9,7 @@ var userSchema = mongo.Schema({
 var messageSchema = mongo.Schema({
     id: Number,
     sender: Number,
+    receiver: Number,
     content: String
 })
 
@@ -17,7 +18,11 @@ var friendSchema = mongo.Schema({
 })
 
 var friendMessageSchema = mongo.Schema({
-    user_id_pair: Array
+    user_id_pair: Array,
+    messageId: {
+        type: mongo.Schema.Types.ObjectId,
+        ref: 'messages'
+    }
 })
 
 /////////////////////////////////////////////////////////////////
@@ -31,5 +36,5 @@ exports.userModel = userModel;
 var friendModle = mongo.model('friend', friendSchema);
 exports.friendModle = friendModle;
 
-var friendMessageModel = mongo.model('friendMessage', friendMessageSchema);
+var friendMessageModel = mongo.model('friend_messages', friendMessageSchema);
 exports.friendMessageModel = friendMessageModel;

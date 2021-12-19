@@ -37,7 +37,7 @@ function handleApp (app) {
     */
     app.post('/api/message', async (req, res) => {
         let msg = req.body;
-        [err, result] = await dao.insertMessageAsync(msg.id, msg.sender, msg.content);
+        [err, result] = await dao.insertMessageAsync(msg.id, msg.sender, msg.receicer, msg.content);
         res.json({
             "errMessage": err,
             "result": result
@@ -70,8 +70,8 @@ function handleApp (app) {
         
     })
 
-    app.get('/api/user/*', async (req, res) => {
-        [err, result] = await dao.getUserByUserIdAsync(+req.params[0]);
+    app.get('/api/user/:id', async (req, res) => {
+        [err, result] = await dao.getUserByUserIdAsync(+req.params.id);
         res.json({
             "errMessage": err,
             "result": result
@@ -86,16 +86,20 @@ function handleApp (app) {
         });
     })
 
-    app.get('/api/friendsId/*', async (req, res) => {
-        [err, result] = await dao.getAllFriendsAsync(+req.params[0]);
+    app.get('/api/friendsId/:selfId', async (req, res) => {
+        [err, result] = await dao.getAllFriendsAsync(+req.params.selfId);
         res.json({
             "errMessage": err,
             "result": result
         });
     })
 
-    app.get('./api/friendMessages/*', (req, res) => {
+    app.get('/api/friendMessages/*', (req, res) => {
         req.body.
         dao.getFriendMessages()
+    })
+
+    app.get('/api/avater/:fileName', (req, res) => {
+        res.sendFile(process.cwd() + '/imgs/' + req.params.fileName);
     })
 }
