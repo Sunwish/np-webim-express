@@ -3,6 +3,7 @@ var http = require('http').createServer(app);
 var dao = require('./dao');
 var models = require('./models'); // just for db test
 var apiHandler = require('./apiHandler');
+var socketHandler = require('./socketHandler');
 var cors = require('cors');
 const io = require('socket.io')(http, {
     cors: {
@@ -17,14 +18,13 @@ dao.connect(app, 'mongodb://127.0.0.1:27017/WebIM')
     console.log("Run db test start");
     dbTest();
     console.log("Run db test end");
-    apiHandler.handleApp(app);
+
+    apiHandler.handleApp(app, io);
 
     // Socket.io listening
     io.on('connection', (socket) => {
-        console.log('A user connected!');
-        socket.on('disconnected', () => {
-            console.log('User disconnected.');
-        })
+        io.emit('from_server', 'Hi client!');
+        socketHandler.handleSocket(socket);
     })
 
     // http listening

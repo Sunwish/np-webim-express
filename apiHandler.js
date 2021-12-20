@@ -1,8 +1,7 @@
-const { disable } = require('express/lib/application');
 var dao = require('./dao');
 
 exports.handleApp =
-function handleApp (app) {
+function handleApp (app, io) {
     app.get('/', (req, res) => {
         res.send('<h1>Hello World!</h1>');
     });
@@ -22,6 +21,10 @@ function handleApp (app) {
             'errMessage': err,
             'result': result
         });
+        // Broadcast message to all socket.io connections
+        if(err == null){
+            io.emit('chat_message', JSON.stringify(result));
+        }
     })
 
     app.get('/api/chatroomMessages', async (req, res) => {
@@ -53,7 +56,6 @@ function handleApp (app) {
     app.post('/api/message', async (req, res) => {
         let msg = req.body;
         [err, result] = await dao.insertMessageAsync(msg.id, msg.sender, msg.receiver, msg.content);
-        console.log(result);
         res.json({
             "errMessage": err,
             "result": result
