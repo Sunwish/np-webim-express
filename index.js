@@ -4,7 +4,11 @@ var dao = require('./dao');
 var models = require('./models'); // just for db test
 var apiHandler = require('./apiHandler');
 var cors = require('cors');
-const { Mongoose } = require('mongoose');
+const io = require('socket.io')(http, {
+    cors: {
+        origin: '*'
+    }
+});
 
 app.use(cors());
 dao.connect(app, 'mongodb://127.0.0.1:27017/WebIM')
@@ -13,10 +17,20 @@ dao.connect(app, 'mongodb://127.0.0.1:27017/WebIM')
     console.log("Run db test start");
     dbTest();
     console.log("Run db test end");
+    apiHandler.handleApp(app);
+
+    // Socket.io listening
+    io.on('connection', (socket) => {
+        console.log('A user connected!');
+        socket.on('disconnected', () => {
+            console.log('User disconnected.');
+        })
+    })
+
+    // http listening
     http.listen(80, () => {
         console.log('listening on *:80');
     })
-    apiHandler.handleApp(app);
 })
 .catch((err) => {
     console.log("Fail to connect to mongodb");
