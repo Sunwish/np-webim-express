@@ -3,7 +3,7 @@ exports.handleSocket =
 function handleSocket (socket) {
     console.log('A user connected!');
 
-    socket.on('disconnected', () => {
+    socket.on('disconnect', () => {
         console.log('User disconnected.');
     })
 
