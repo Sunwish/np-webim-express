@@ -17,6 +17,28 @@ function connect(app, connectString) {
         });
     })
 }
+////////////////////////////////////// ABOUT CHATROOM MESSAGE
+exports.insertChatroomMessageAsync =
+function insertChatroomMessageAsync (sender, content, time) {
+    return new models.chatroomMessageModel ({
+        sender: sender,
+        content: content,
+        time: time
+    }).save()
+    .then(res => {
+        return res.populate('sender')
+        .then(res => [null, res])
+        .catch(err => [err]);
+    })
+    .catch(err => [err]);   
+}
+
+exports.getChatroomMessagesAsync =
+function getChatroomMessagesAsync () {
+    return models.chatroomMessageModel.find({}).populate('sender').exec()
+    .then(res => [null, res])
+    .catch(err => [err]);
+}
 
 ////////////////////////////////////// INSERT MESSAGE
 exports.insertMessage =
@@ -46,9 +68,10 @@ function insertMessageAsync (id, sender, receiver, content){
 //////////////////////////////////////// INSERT FRINED MESSAGE
 
 function insertFriendMessageAsync (id, sender, receicer, messageId) {
+    console.log("inserted message id: " + messageId);
     return new models.friendMessageModel({
         user_id_pair: [sender, receicer].sort(),
-        messageId: messageId
+        message: messageId
     }).save()
     .then(result => [null, result])
     .catch(err => [err]);
@@ -176,10 +199,10 @@ function getFriendMessages (user_id_pair, callback) {
     }, callback)
 }
 exports.getFriendMessagesAsync = 
-function getFriendMessagesAsync (user_id_pair) {
+async function getFriendMessagesAsync (user_id_pair) {
     return models.friendMessageModel.find({
-        user_id_pair: user_id_pair
-    }).exec()
+        user_id_pair: user_id_pair.sort()
+    }).populate('message').exec()
     .then(result => [null, result])
     .catch(err => [err]);
 }

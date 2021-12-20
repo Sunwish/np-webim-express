@@ -1,5 +1,14 @@
 const mongo = require('mongoose');
 
+var chatroomMessageSchema = mongo.Schema({
+    sender: {
+        type: mongo.Schema.ObjectId,
+        ref: 'users'
+    },
+    content: String,
+    time: Date
+})
+
 var userSchema = mongo.Schema({
     id: Number,
     username: String,
@@ -19,7 +28,7 @@ var friendSchema = mongo.Schema({
 
 var friendMessageSchema = mongo.Schema({
     user_id_pair: Array,
-    messageId: {
+    message: {
         type: mongo.Schema.Types.ObjectId,
         ref: 'messages'
     }
@@ -27,14 +36,17 @@ var friendMessageSchema = mongo.Schema({
 
 /////////////////////////////////////////////////////////////////
 
-var messageModel = mongo.model('message', messageSchema);
+var messageModel = mongo.model('messages', messageSchema);
 exports.messageModel = messageModel;
 
-var userModel = mongo.model('user', userSchema);
+var userModel = mongo.model('users', userSchema);
 exports.userModel = userModel;
 
-var friendModle = mongo.model('friend', friendSchema);
+var friendModle = mongo.model('friends', friendSchema);
 exports.friendModle = friendModle;
 
 var friendMessageModel = mongo.model('friend_messages', friendMessageSchema);
 exports.friendMessageModel = friendMessageModel;
+
+var chatroomMessageModel = mongo.model('chatroom_messages', chatroomMessageSchema);
+exports.chatroomMessageModel = chatroomMessageModel;

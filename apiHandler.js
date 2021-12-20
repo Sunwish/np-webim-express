@@ -16,6 +16,21 @@ function handleApp (app) {
     });
 
     //////////////////////////////////////////////////////////
+    app.post('/api/chatroomMessage', async (req, res) => {
+        [err, result] = await dao.insertChatroomMessageAsync(req.body.sender, req.body.content, req.body.time);
+        res.json({
+            'errMessage': err,
+            'result': result
+        });
+    })
+
+    app.get('/api/chatroomMessages', async (req, res) => {
+        [err, result] = await dao.getChatroomMessagesAsync();
+        res.json({
+            'errMessage': err,
+            'result': result
+        });
+    })
 
     app.get('/api/messages', async (req, res) => {
         [err, result] = await dao.getAllMessagesAsync();
@@ -38,6 +53,7 @@ function handleApp (app) {
     app.post('/api/message', async (req, res) => {
         let msg = req.body;
         [err, result] = await dao.insertMessageAsync(msg.id, msg.sender, msg.receiver, msg.content);
+        console.log(result);
         res.json({
             "errMessage": err,
             "result": result
@@ -51,6 +67,19 @@ function handleApp (app) {
             "result": result
         });
     })
+
+    app.get('/api/friendMessages/:id1/:id2', async(req, res) => {
+        [err, reses] = await dao.getFriendMessagesAsync([+req.params.id1, +req.params.id2]);
+        let result = [];
+        for(r of reses) {
+            result.push(r.message);
+        }
+        res.json({
+            "errMessage": err,
+            "result": result
+        });
+    })
+
 /*
     app.get('/api/users', (req, res) => {
         dao.getAllUsers((err, users) => {
@@ -92,11 +121,6 @@ function handleApp (app) {
             "errMessage": err,
             "result": result
         });
-    })
-
-    app.get('/api/friendMessages/*', (req, res) => {
-        req.body.
-        dao.getFriendMessages()
     })
 
     app.get('/api/avater/:fileName', (req, res) => {
