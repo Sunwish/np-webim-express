@@ -133,6 +133,16 @@ function getUserByUserIdAsync (user_id) {
     .catch(err => [err]);
 }
 
+//////////////////////////////////////// GET USER BY ID
+exports.getUserByUsernameAsync =
+function getUserByUsernameAsync (username) {
+    return models.userModel.findOne({
+        username: username
+    }).exec()
+    .then(result => [null, result])
+    .catch(err => [err]);
+}
+
 ///////////////////////////////////////// ADD FRIEND
 exports.addFriend = 
 function addFriend (user_id_A, user_id_B, callback) {

@@ -15,6 +15,17 @@ function handleApp (app, io) {
     });
 
     //////////////////////////////////////////////////////////
+    app.post('/api/login', async (req, res) => {
+        let [err, result] = await dao.getUserByUsernameAsync(req.body.username);
+        res.json({
+            "errMessage": err,
+            "result": result
+        })
+        if(result) {
+            io.emit('user_connect', JSON.stringify(result));
+        }
+    })
+
     app.post('/api/chatroomMessage', async (req, res) => {
         [err, result] = await dao.insertChatroomMessageAsync(req.body.sender, req.body.content, req.body.time);
         res.json({
@@ -34,6 +45,7 @@ function handleApp (app, io) {
             'result': result
         });
     })
+    //////////////////////////////////////////////////////////
 
     app.get('/api/messages', async (req, res) => {
         [err, result] = await dao.getAllMessagesAsync();
