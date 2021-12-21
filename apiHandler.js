@@ -22,7 +22,12 @@ function handleApp (app, io) {
             "result": result
         })
         if(result) {
-            io.emit('user_connect', JSON.stringify(result));
+            let resultWithConnId = {};
+            // Copy result to resultWithConnId
+            Object.assign(resultWithConnId, result._doc);
+            resultWithConnId.connId = req.body.connId;
+            console.log('user login sucessed: ', resultWithConnId.connId);
+            io.emit('user_connect', JSON.stringify(resultWithConnId));
         }
     })
 
