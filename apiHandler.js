@@ -1,7 +1,7 @@
 var dao = require('./dao');
 
 exports.handleApp =
-function handleApp (app, io) {
+function handleApp (app, io, maintain) {
     app.get('/', (req, res) => {
         res.send('<h1>Hello World!</h1>');
     });
@@ -23,16 +23,37 @@ function handleApp (app, io) {
         })
     })
     
-    app.post('/api/onlineBroadcast', (req, res) => {
+    app.post('/api/onlineUser', (req, res) => {
+        if(req.body.connId == undefined) {
+            res.json({
+                'errMessage': 'Online connect id cannot be undefine',
+            });
+        }
+
         let userWithConnId = {};
-        // Copy result to resultWithConnId
+        // Copy userObjcet to userWithConnId
         Object.assign(userWithConnId, req.body.user);
         userWithConnId.connId = req.body.connId;
-        console.log('user login sucessed: ', userWithConnId.connId);
+        
+        // Insert into onlineUser list on server
+        const i = maintain.onlineUsers.findIndex(user => user.connId == userWithConnId.connId);
+        i ==-1 && maintain.onlineUsers.push(userWithConnId);
+        console.log('user login sucessed: ', userWithConnId.connId,
+        'Online count: ', maintain.onlineUsers.length);
+        
+        // Broadcast online event to all online users
         io.emit('user_connect', JSON.stringify(userWithConnId));
+        
         res.json({
             "errMessage": null,
             "result": null
+        })
+    })
+
+    app.get('/api/onlineUsers', (req, res) => {
+        res.json({
+            "errMessage": null,
+            "result": maintain.onlineUsers
         })
     })
 

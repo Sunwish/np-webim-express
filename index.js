@@ -19,12 +19,16 @@ dao.connect(app, 'mongodb://127.0.0.1:27017/WebIM')
     dbTest();
     console.log("Run db test end");
 
-    apiHandler.handleApp(app, io);
+    let maintain = {
+        onlineUsers: [],
+    }
+    
+    apiHandler.handleApp(app, io, maintain);
 
     // Socket.io listening
     io.on('connection', (socket) => {
         io.emit('from_server', 'Hi client!');
-        socketHandler.handleSocket(socket);
+        socketHandler.handleSocket(socket, maintain);
     })
 
     // http listening
