@@ -21,14 +21,19 @@ function handleApp (app, io) {
             "errMessage": err,
             "result": result
         })
-        if(result) {
-            let resultWithConnId = {};
-            // Copy result to resultWithConnId
-            Object.assign(resultWithConnId, result._doc);
-            resultWithConnId.connId = req.body.connId;
-            console.log('user login sucessed: ', resultWithConnId.connId);
-            io.emit('user_connect', JSON.stringify(resultWithConnId));
-        }
+    })
+    
+    app.post('/api/onlineBroadcast', (req, res) => {
+        let userWithConnId = {};
+        // Copy result to resultWithConnId
+        Object.assign(userWithConnId, req.body.user);
+        userWithConnId.connId = req.body.connId;
+        console.log('user login sucessed: ', userWithConnId.connId);
+        io.emit('user_connect', JSON.stringify(userWithConnId));
+        res.json({
+            "errMessage": null,
+            "result": null
+        })
     })
 
     app.post('/api/chatroomMessage', async (req, res) => {
