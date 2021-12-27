@@ -1,17 +1,23 @@
+////////////////////////////////////// Require modulars
 var app = require('express')();
 var http = require('http').createServer(app);
+var cors = require('cors');
+var session = require('express-session');
+////////////////////////////////////// Require components
+var socketHandler = require('./socketHandler');
+var apiHandler = require('./apiHandler');
 var dao = require('./dao');
 var models = require('./models'); // just for db test
-var apiHandler = require('./apiHandler');
-var socketHandler = require('./socketHandler');
-var cors = require('cors');
+//////////////////////////////////////
+
 const io = require('socket.io')(http, {
     cors: {
         origin: '*'
     }
 });
 
-app.use(cors());
+configurateApp(app); // configurate middleware
+
 dao.connect(app, 'mongodb://127.0.0.1:27017/WebIM')
 .then(() => {
     console.log("Connect to mongodb successed.");
@@ -48,4 +54,19 @@ async function dbTest () {
     }).exec();
     console.log(queryRes);
     */
+}
+
+function configurateApp(app) {
+    app.use(cors({
+        credentials: true,
+        origin: 'http://localhost:8093',
+    }));
+    app.use(session({
+        secret: 'secret',
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            maxAge: 1000 * 60 * 3
+        }
+    }));
 }

@@ -15,19 +15,52 @@ function handleApp (app, io, maintain) {
     });
 
     //////////////////////////////////////////////////////////
+    app.post('/api/whoami', async (req, res) => {
+        if(req.session.loginUserInfo) {
+            res.json({
+                "result": req.session.loginUserInfo
+            })
+            return;
+        }
+        res.json({});
+    })
+
     app.post('/api/login', async (req, res) => {
-        let [err, result] = await dao.getUserByUsernameAsync(req.body.username);
-        res.json({
-            "errMessage": err,
-            "result": result
-        })
+        if(req.session.loginUserInfo) {
+            //console.log('session: ', req.session.loginUserInfo);
+            res.json({
+                "errMessage": err,
+                "result": req.session.loginUserInfo
+            })
+            return;
+        } else {
+            let [err, result] = await dao.getUserByUsernameAsync(req.body.username);
+            if(result) {
+                // login success
+                req.session.loginUserInfo = result;
+                //console.log('set session: ', req.session.loginUserInfo);
+                console.log('create a loginUserInfo session.');
+            }
+            res.json({
+                "errMessage": err,
+                "result": result
+            })
+        }
     })
     
+    app.post('/api/logout', async (req, res) => {
+        req.session.loginUserInfo = null;
+        res.json({
+            'result': ''
+        })
+    })
+
     app.post('/api/onlineUser', (req, res) => {
         if(req.body.connId == undefined) {
             res.json({
                 'errMessage': 'Online connect id cannot be undefine',
             });
+            return;
         }
 
         let userWithConnId = {};
