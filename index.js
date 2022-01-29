@@ -59,7 +59,7 @@ async function dbTest () {
 function configurateApp(app) {
     app.use(cors({
         credentials: true,
-        origin: 'http://localhost:8093',
+        origin: 'http://localhost:8080',
     }));
     app.use(session({
         secret: 'secret',
